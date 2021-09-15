@@ -2,7 +2,7 @@ from rest_framework import serializers
 from profiles_api import models
 
 class HelloSerializers(serializers.Serializer):
-    """Serializes a name field for testing our APIView"""
+    """Serializes a name field for testing our API View"""
     name = serializers.CharField(max_length=10)
     place = serializers.CharField(max_length=10)
 
@@ -40,5 +40,3 @@ class UserProfileSerializer(serializers.ModelSerializer):
             instance.set_password(password)
 
         return super().update(instance, validated_data)
-
-

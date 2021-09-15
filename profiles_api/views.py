@@ -4,6 +4,8 @@ from rest_framework import status
 from rest_framework import viewsets
 from rest_framework.authentication import TokenAuthentication
 from rest_framework import filters
+from rest_framework.authtoken.views import ObtainAuthToken
+from rest_framework.settings import api_settings
 from profiles_api import serializers
 from profiles_api import models
 from profiles_api import permissions
@@ -14,7 +16,7 @@ class HelloApiView(APIView):
 
     serializer_class = serializers.HelloSerializers
 
-    def get(self,request,format=None):
+    def get(self, request, format=None):
         """Returns the list of API features"""
         an_apiview = [
             'Uses HTTP methods as functions (get,post,patch,put,delete)',
@@ -22,7 +24,7 @@ class HelloApiView(APIView):
             'Gives you the most control over the applicaton logic',
             'Is mapped manually to the URLs',
         ]
-        return Response({'message':'get method','an_apiview':an_apiview})
+        return Response({'message': 'get method', 'an_apiview': an_apiview})
 
     def post(self, request):
         """create hello message with our name"""
@@ -30,7 +32,7 @@ class HelloApiView(APIView):
         if serializer.is_valid():
             name = serializer.validated_data.get('name')
             place = serializer.validated_data.get('place')
-            message = {"name":name, "place":place}
+            message = {"name": name, "place": place}
             return Response(message)
         else:
             return Response(
@@ -38,45 +40,46 @@ class HelloApiView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-    def put(self,request,pk=None):
+    def put(self, request, pk=None):
         """Handle updating an object"""
-        return Response({'method':'PUT'})
+        return Response({'method': 'PUT'})
 
-    def patch(self,request,pk=None):
+    def patch(self, request, pk=None):
         """Handling a partial update of the object """
-        return Response({'method':'PATCH'})
+        return Response({'method': 'PATCH'})
 
     def delete(self, request, pk=None):
         """Deleting an object"""
-        return Response({'method':'Delete'})
+        return Response({'method': 'Delete'})
 
 
 class HelloViewSet(viewsets.ViewSet):
     """Test API View Set """
     serializer_class = serializers.HelloSerializers
-    def list(self,request):
-        """Return a singel hello message"""
+
+    def list(self, request):
+        """Return a single hello message"""
         a_viewset = [
             'uses actions (list,create,retreive,update,partial_update)',
             'Automatically maps to URLs using routers',
             'provides more functionality with less code',
         ]
-        return Response({'message':'Hello!', 'a_viewset':a_viewset})
+        return Response({'message': 'Hello!', 'a_viewset': a_viewset})
 
     def create(self, request):
-        "create a new hello message"
+        """create a new hello message"""
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
             name = serializer.validated_data.get('name')
             place = serializer.validated_data.get('place')
-            return_dict = {"message":"created message","name":name,"place":place}
-            return Response(return_dict,status=status.HTTP_201_CREATED)
+            return_dict = {"message": "created message", "name": name, "place": place}
+            return Response(return_dict, status=status.HTTP_201_CREATED)
         else:
-            return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def retrieve(self,request,pk=None):
+    def retrieve(self, request, pk=None):
         """ Handling getting an object by its ID"""
-        return Response({"retrieve_get":'GET'})
+        return Response({"retrieve_get": 'GET'})
 
     def update(self, request, pk=None):
         """Handle updating an object"""
@@ -102,3 +105,8 @@ class UserProfileViewSet(viewsets.ModelViewSet):
     permission_classes = (permissions.UpdateOwnProfile,)
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name', 'email',)
+
+
+class UserLoginApiView(ObtainAuthToken):
+    """Handle creating user authentication tokens"""
+    renderer_classes = api_settings.DEFAULT_RENDERER_CLASSES
